@@ -40,4 +40,4 @@ Se quiseres testar o projeto no teu computador, segue estes passos:
 
 1. **Clona o repositório:**
    ```bash
-   git clone [https://github.com/TEU_UTILIZADOR/nome-do-repositorio.git](https://github.com/TEU_UTILIZADOR/nome-do-repositorio.git)
+   git clone [https://github.com/TEU_UTILIZADOR/nome-do-repositorio.git](https://github.com/Fafa-dev18/To-do-List)
