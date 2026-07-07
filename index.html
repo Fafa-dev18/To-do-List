@@ -1,30 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My To-Do List</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarefas</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <h1>Minha Lista de Tarefas ✔</h1>
+  <main class="app">
+    <header class="app-header">
+      <h1>Tarefas</h1>
+      <p class="counter" id="counter">0 pendentes</p>
+    </header>
 
-    <div class="container">
-        <input type="text" id="new-task" placeholder="Adicione uma nova tarefa...">
-        <button id="add-btn">Adicionar</button>
+    <div class="card">
+      <div class="input-row">
+        <input type="text" id="new-task" placeholder="Nova tarefa" autocomplete="off">
+        <button id="add-btn" aria-label="Adicionar tarefa">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <ul id="task-list"></ul>
+
+      <p class="empty-state" id="empty-state">Nenhuma tarefa. Aproveite o dia ✨</p>
     </div>
 
-    <ul id="task-list">
-        <h2>TAREFAS</h2>
-    </ul>
-
     <footer>
-        <p>Desenvolvido por <a href="https://github.com/Fafa-Dev18" target="_blank"> Fafa-Dev18 </a></p>
+      <p>Desenvolvido por <a href="https://github.com/Fafa-Dev18" target="_blank" rel="noopener">Fafa-Dev18</a></p>
     </footer>
-    <script src="script.js"></script>
-</body>
+  </main>
 
+  <script src="script.js"></script>
+</body>
 </html>

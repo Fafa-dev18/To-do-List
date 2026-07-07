@@ -1,61 +1,68 @@
 const express = require("express");
+const fs = require("fs");
+const crypto = require("crypto");
+
 const app = express();
-const fs = require('fs');
 const port = 3000;
+const FILE_PATH = "tasks.json";
 
 app.use(express.static(__dirname));
 app.use(express.json());
 
-const FILE_PATH = 'tasks.json';
-
-function loadTasksFromFile() {
+function loadTasks() {
   try {
-  if (!fs.existsSync(FILE_PATH)) {
-    fs.writeFileSync(FILE_PATH, JSON.stringify([]));
+    if (!fs.existsSync(FILE_PATH)) {
+      fs.writeFileSync(FILE_PATH, JSON.stringify([]));
+      return [];
+    }
+    const data = JSON.parse(fs.readFileSync(FILE_PATH, "utf-8"));
+    
+    const migrated = data.map((t) =>
+      typeof t === "string" ? { id: crypto.randomUUID(), texto: t, feita: false } : t
+    );
+    return migrated;
+  } catch (error) {
+    console.error("Erro ao ler tarefas:", error);
     return [];
   }
-
-  const data = fs.readFileSync(FILE_PATH, 'utf-8');
-  return JSON.parse(data);
-} catch (error) {
-  console.error('Error reading tasks from file:', error);
-  return [];}
 }
 
-function saveTasksToFile(tarefas) {
+function saveTasks(tarefas) {
   fs.writeFileSync(FILE_PATH, JSON.stringify(tarefas, null, 2));
 }
 
-app.get("/api/tarefas", function (req, res) {
-  const tarefas = loadTasksFromFile();
-  return res.json(tarefas);
+app.get("/api/tarefas", (req, res) => {
+  res.json(loadTasks());
 });
 
-app.post("/api/tarefas", function (req, res) {
-  let tarefas = loadTasksFromFile();
-  const newTask = req.body.texto;
+app.post("/api/tarefas", (req, res) => {
+  const texto = req.body.texto?.trim();
+  if (!texto) return res.status(400).json({ erro: "Texto obrigatório" });
 
-  if (newTask) {
-    tarefas.push(newTask);
-    saveTasksToFile(tarefas);
-  }
+  const tarefas = loadTasks();
+  const nova = { id: crypto.randomUUID(), texto, feita: false };
+  tarefas.push(nova);
+  saveTasks(tarefas);
 
-  return res.status(201).json(tarefas);
+  res.status(201).json(nova);
 });
 
-app.delete('/api/tarefas', function (req, res) { 
-  const taskToDelete = req.body.texto;
-  let tarefas = loadTasksFromFile();
+app.patch("/api/tarefas/:id", (req, res) => {
+  const tarefas = loadTasks();
+  const tarefa = tarefas.find((t) => t.id === req.params.id);
 
-  tarefas = tarefas.filter(function (tarefa) {
-    return tarefa !== taskToDelete;
-  });
+  if (!tarefa) return res.status(404).json({ erro: "Tarefa não encontrada" });
 
-  saveTasksToFile(tarefas);
-
-  return res.status(200).json(tarefas);
+  tarefa.feita = !tarefa.feita;
+  saveTasks(tarefas);
+  res.json(tarefa);
 });
 
-app.listen(port, function () {
-  console.log(`Server is running on port ${port}`);
+app.delete("/api/tarefas/:id", (req, res) => {
+  let tarefas = loadTasks();
+  tarefas = tarefas.filter((t) => t.id !== req.params.id);
+  saveTasks(tarefas);
+  res.status(200).json(tarefas);
 });
+
+app.listen(port, () => console.log(`Server rodando na porta ${port}`));
